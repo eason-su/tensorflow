@@ -37,6 +37,6 @@ def train_model(reg):
     print("\n")
 
 
-# train_model(reg="None")
+train_model(reg="None")
 train_model(reg="l1")
 train_model(reg="l2")
