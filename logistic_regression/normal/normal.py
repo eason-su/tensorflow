@@ -5,5 +5,4 @@ scaler = preprocessing.StandardScaler().fit(X)
 print ("mean",scaler.mean_)
 print ("scale",scaler.scale_)
 
-
 print (scaler.transform(X))
