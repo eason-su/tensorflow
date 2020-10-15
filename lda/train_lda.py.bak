@@ -16,7 +16,7 @@ def cal_entropy(topic):
 	return entropy
 
 print "读取文件"
-with open("../news/forward_index") as f :
+with open("../news/forward_index.yl") as f :
 	lines=f.readlines()
 print "读取结束"
 lines=[line.strip() for line in lines]

@@ -4,7 +4,7 @@ import sys
 import importlib
 
 importlib.reload(sys)
-#sys.setdefaultencoding('utf-8')
+# sys.setdefaultencoding('utf-8')
 import json
 from gensim import corpora, models, similarities
 import pickle
@@ -21,7 +21,7 @@ def cal_entropy(topic):
 
 
 print("读取文件")
-with open("forward_index","rb") as f:
+with open("forward_index.yl", "rb") as f:
     lines = f.readlines()
 print("读取结束")
 lines = [line.strip() for line in lines]
@@ -57,7 +57,8 @@ for topic_num in range(0, num_topics):
 word_entropy = [[word, cal_entropy(topic_distribute)] for word, topic_distribute in list(word_topic_distribute.items())]
 word_entropy = sorted(word_entropy, key=lambda s: s[1])
 word_entropy = ["{}\t{}".format(s[0], s[1]) for s in word_entropy]
-with open("word_entropy", "w") as f:
+with open("word_entropy", "w", encoding="utf-8") as f:
+    print("\n".join(word_entropy))
     f.writelines("\n".join(word_entropy))
 # 计算文章的分布
 article_result = []
