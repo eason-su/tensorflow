@@ -1,0 +1,44 @@
+import random
+
+import datahelper
+import text_model_v1
+import tensorflow_hub as hub
+import tensorflow as tf
+import numpy as np
+import pandas as pd
+
+
+def start_train():
+    data_list = datahelper.retrieve_data()   # example: ['sentence a', 'sentence b'...]
+    data_pair_list = datahelper.retrieve_similar_data()  # example: [('sentence a', 'sentence a_'), ('sentence b', 'sentence b_') ...]
+
+    data_pair_list_df = pd.DataFrame({'sentence1_id': map(lambda x: x[0], data_pair_list), 'sentence2_id': map(lambda x: x[1], data_pair_list)})
+
+    embed = hub.load(r"D:\ML Models\universal-sentence-encoder_4.tar\universal-sentence-encoder_4")
+    sentences = list(map(lambda x: x[1], data_list))
+    ids = list(map(lambda x: x[0], data_list))
+    all_sentences_embeddings = embed(sentences)
+
+    all_sentences_embeddings_pair = list(zip(ids, sentences, all_sentences_embeddings))
+    all_sentences_embeddings_df1 = pd.DataFrame({'sentence1_id': map(lambda x: x[0], all_sentences_embeddings_pair), 'sentence': map(lambda x: x[1], all_sentences_embeddings_pair), 'tensor': map(lambda x: x[2], all_sentences_embeddings_pair)})
+    all_sentences_embeddings_df2 = pd.DataFrame({'sentence2_id': map(lambda x: x[0], all_sentences_embeddings_pair), 'sentence': map(lambda x: x[1], all_sentences_embeddings_pair), 'tensor': map(lambda x: x[2], all_sentences_embeddings_pair)})
+
+    merged_df = data_pair_list_df.merge(all_sentences_embeddings_df1, on='sentence1_id').merge(all_sentences_embeddings_df2, on='sentence2_id')
+
+    train_datas = []
+    count = 0
+    for idx, (sentence1_id, sentence2_id, sentence_x, tensor_x, sentence_y, tensor_y) in merged_df.iterrows():
+        if count % 1000 == 0:
+            print("Generate Train Data Embedding Index Progress: ", count, len(data_pair_list))
+        count += 1
+
+        tensor_z_list = random.sample(list(all_sentences_embeddings), 10)
+        for tensor_z in tensor_z_list:
+            train_datas.append([tensor_x, tensor_y, tensor_z])
+
+    text_model_v1.train(train_datas, 512)
+
+
+if __name__ == '__main__':
+    start_train()
+
